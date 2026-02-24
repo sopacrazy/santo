@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Minus } from 'lucide-react';
 
@@ -56,6 +56,23 @@ export default function BurgerBuilder({ onCheckout, selectedBurger }: BurgerBuil
     return initialStack;
   });
 
+  const [animFrame, setAnimFrame] = useState(1);
+
+  useEffect(() => {
+    if (selectedBurger?.id === 'classico') {
+      const interval = setInterval(() => {
+        setAnimFrame(prev => {
+          if (prev >= 6) {
+            clearInterval(interval);
+            return 6;
+          }
+          return prev + 1;
+        });
+      }, 150);
+      return () => clearInterval(interval);
+    }
+  }, [selectedBurger?.id]);
+
   const addIngredient = (ingredient: Ingredient) => {
     setSelectedIngredients((prev) => [
       ...prev,
@@ -84,7 +101,12 @@ export default function BurgerBuilder({ onCheckout, selectedBurger }: BurgerBuil
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <img src="/hamburgue.png" alt="Hambúrguer Montado" className="w-64 drop-shadow-2xl object-contain z-10" onError={(e) => { e.currentTarget.src = '/hamburguer.png'; }} />
+          <img 
+            src={selectedBurger?.id === 'classico' ? `/${animFrame}.png` : (selectedBurger?.image || '/hamburgue.png')} 
+            alt="Hambúrguer Montado" 
+            className="w-64 drop-shadow-2xl object-contain z-10" 
+            onError={(e) => { e.currentTarget.src = '/hamburguer.png'; }} 
+          />
           <div className="w-48 h-8 bg-black/10 blur-xl rounded-[100%] absolute bottom-2 z-0" />
         </motion.div>
       </div>
