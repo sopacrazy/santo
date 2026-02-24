@@ -42,7 +42,6 @@ export interface BurgerBuilderProps {
 
 export default function BurgerBuilder({ onCheckout }: BurgerBuilderProps) {
   const [selectedIngredients, setSelectedIngredients] = useState<SelectedIngredient[]>(initialStack);
-  const [activeTab, setActiveTab] = useState<'burger' | 'drink'>('burger');
 
   const addIngredient = (ingredient: Ingredient) => {
     setSelectedIngredients((prev) => [
@@ -59,7 +58,7 @@ export default function BurgerBuilder({ onCheckout }: BurgerBuilderProps) {
     return BASE_PRICE + selectedIngredients.reduce((sum, item) => sum + item.ingredient.price, 0);
   }, [selectedIngredients]);
 
-  const itemsToShow = AVAILABLE_INGREDIENTS.filter(ing => (ing.type || 'burger') === activeTab);
+  const itemsToShow = AVAILABLE_INGREDIENTS.filter(ing => ing.type === 'burger');
 
   return (
     <div className="flex flex-col h-full bg-white relative w-full pt-16">
@@ -95,21 +94,7 @@ export default function BurgerBuilder({ onCheckout }: BurgerBuilderProps) {
            </motion.div>
         </div>
 
-        {/* Abas de Navegação */}
-        <div className="flex gap-4 mb-4 border-b border-slate-100 pb-2 relative z-40">
-          <button 
-            onClick={() => setActiveTab('burger')}
-            className={`font-bold transition-colors pb-2 ${activeTab === 'burger' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-slate-400'}`}
-          >
-            Ingredientes
-          </button>
-          <button 
-            onClick={() => setActiveTab('drink')}
-            className={`font-bold transition-colors pb-2 ${activeTab === 'drink' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-slate-400'}`}
-          >
-            Sucos / Refri
-          </button>
-        </div>
+
 
         {/* Lista de Ingredientes com Scroll Interno */}
         <div className="flex-1 overflow-y-auto no-scrollbar space-y-2 pb-4 relative z-40">
@@ -158,7 +143,7 @@ export default function BurgerBuilder({ onCheckout }: BurgerBuilderProps) {
           onClick={() => onCheckout(selectedIngredients, totalPrice)}
           className="w-full mt-2 bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl shadow-slate-800/20 active:scale-95 transition-transform flex items-center justify-center"
         >
-          Concluir Pedido
+          Adicionar ao Carrinho
         </button>
       </div>
     </div>
