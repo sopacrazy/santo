@@ -17,7 +17,8 @@ import {
   ShoppingBag,
   User,
   ChevronRight,
-  Info
+  Info,
+  BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import BurgerBuilder, { AVAILABLE_INGREDIENTS, SelectedIngredient, Ingredient } from './components/BurgerBuilder';
@@ -37,7 +38,7 @@ export interface CartItemType {
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
-  const [activeCategory, setActiveCategory] = useState<'Hambúrguer' | 'Bebidas'>('Hambúrguer');
+  const [activeCategory, setActiveCategory] = useState<'Hambúrguer' | 'Bebidas' | 'Cardápio'>('Hambúrguer');
   const [customerName, setCustomerName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
 
@@ -176,9 +177,9 @@ export default function App() {
 
               {/* Recomendados / Bebidas */}
               <div className="mt-6 px-8">
-                <h3 className="text-xl font-bold text-slate-800 mb-6">{activeCategory === 'Hambúrguer' ? 'Recomendados' : 'Opções de Bebidas'}</h3>
+                <h3 className="text-xl font-bold text-slate-800 mb-6">{activeCategory === 'Hambúrguer' ? 'Recomendados' : activeCategory === 'Bebidas' ? 'Opções de Bebidas' : 'Cardápio Completo'}</h3>
                 
-                {activeCategory === 'Hambúrguer' && (
+                {(activeCategory === 'Hambúrguer' || activeCategory === 'Cardápio') && (
                   <div className="grid grid-cols-2 gap-4">
                     {recommended.map((item) => (
                       <motion.div 
@@ -203,7 +204,11 @@ export default function App() {
                   </div>
                 )}
 
-                {activeCategory === 'Bebidas' && (
+                {activeCategory === 'Cardápio' && (
+                  <h3 className="text-xl font-bold text-slate-800 mt-10 mb-6">Bebidas</h3>
+                )}
+
+                {(activeCategory === 'Bebidas' || activeCategory === 'Cardápio') && (
                   <div className="flex flex-col gap-4">
                     {AVAILABLE_INGREDIENTS.filter(i => i.type === 'drink').map(drink => (
                        <div key={drink.id} className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
@@ -233,16 +238,16 @@ export default function App() {
             <div className="absolute bottom-0 left-0 right-0 bg-white px-8 py-5 flex justify-between items-center border-t border-slate-50 shadow-2xl z-[100]">
               <div 
                 onClick={() => { setCurrentScreen('home'); setActiveCategory('Hambúrguer'); }}
-                className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${currentScreen === 'home' && activeCategory === 'Hambúrguer' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
+                className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${currentScreen === 'home' && (activeCategory === 'Hambúrguer' || activeCategory === 'Bebidas') ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
               >
                 <Home className="w-6 h-6" />
               </div>
               
               <div 
-                onClick={() => { setCurrentScreen('home'); setActiveCategory('Hambúrguer'); }}
-                className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all text-slate-400`}
+                onClick={() => { setCurrentScreen('home'); setActiveCategory('Cardápio'); }}
+                className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all relative ${currentScreen === 'home' && activeCategory === 'Cardápio' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
               >
-                <div className="text-2xl">🍔</div>
+                <BookOpen className="w-6 h-6" />
               </div>
 
               <div 
