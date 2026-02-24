@@ -68,7 +68,7 @@ export default function BurgerBuilder({ onCheckout, selectedBurger }: BurgerBuil
           }
           return prev + 1;
         });
-      }, 150);
+      }, 400);
       return () => clearInterval(interval);
     }
   }, [selectedBurger?.id]);
@@ -96,18 +96,35 @@ export default function BurgerBuilder({ onCheckout, selectedBurger }: BurgerBuil
       {/* Imagem do Burger Estático */}
       <div className="flex-1 relative flex flex-col items-center justify-center -mt-10 overflow-hidden min-h-[300px]">
         <motion.div 
-          className="relative flex flex-col items-center justify-center"
+          className="relative flex flex-col items-center justify-center w-64 h-64"
           initial={{ opacity: 0, scale: 0.9, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <img 
-            src={selectedBurger?.id === 'classico' ? `/${animFrame}.png` : (selectedBurger?.image || '/hamburgue.png')} 
-            alt="Hambúrguer Montado" 
-            className="w-64 drop-shadow-2xl object-contain z-10" 
-            onError={(e) => { e.currentTarget.src = '/hamburguer.png'; }} 
-          />
-          <div className="w-48 h-8 bg-black/10 blur-xl rounded-[100%] absolute bottom-2 z-0" />
+          {selectedBurger?.id === 'classico' ? (
+            <div className="w-full h-full relative flex items-center justify-center z-10">
+              <AnimatePresence>
+                <motion.img 
+                  key={animFrame}
+                  initial={{ opacity: 0.5, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  src={`/${animFrame}.png`}
+                  alt="Montando Hambúrguer" 
+                  className="w-full h-full drop-shadow-2xl object-contain absolute inset-0" 
+                />
+              </AnimatePresence>
+            </div>
+          ) : (
+            <img 
+              src={selectedBurger?.image || '/hamburgue.png'} 
+              alt="Hambúrguer Montado" 
+              className="w-full h-full drop-shadow-2xl object-contain z-10" 
+              onError={(e) => { e.currentTarget.src = '/hamburguer.png'; }} 
+            />
+          )}
+          <div className="w-48 h-8 bg-black/10 blur-xl rounded-[100%] absolute -bottom-4 z-0" />
         </motion.div>
       </div>
 
