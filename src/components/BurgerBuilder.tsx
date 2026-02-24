@@ -37,11 +37,24 @@ const initialStack: SelectedIngredient[] = [
 ];
 
 export interface BurgerBuilderProps {
+  key?: string;
   onCheckout: (items: SelectedIngredient[], total: number) => void;
+  selectedBurger?: {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+  };
 }
 
-export default function BurgerBuilder({ onCheckout }: BurgerBuilderProps) {
-  const [selectedIngredients, setSelectedIngredients] = useState<SelectedIngredient[]>(initialStack);
+export default function BurgerBuilder({ onCheckout, selectedBurger }: BurgerBuilderProps) {
+  const [selectedIngredients, setSelectedIngredients] = useState<SelectedIngredient[]>(() => {
+    if (selectedBurger) {
+      return [{ uniqueId: `init-${selectedBurger.id}`, ingredient: { id: selectedBurger.id, name: selectedBurger.name, price: selectedBurger.price, image: selectedBurger.image, zIndex: 10, type: 'base' } as Ingredient }];
+    }
+    return initialStack;
+  });
 
   const addIngredient = (ingredient: Ingredient) => {
     setSelectedIngredients((prev) => [
@@ -78,10 +91,10 @@ export default function BurgerBuilder({ onCheckout }: BurgerBuilderProps) {
 
       {/* Painel de Controle - Componente Flexível com Scroll */}
       <div className="bg-white rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.06)] px-6 pt-8 pb-8 flex flex-col min-h-[50vh] flex-1 z-30 relative">
-        <div className="flex justify-between items-end mb-4">
-           <div>
-             <h2 className="text-xl font-bold text-slate-800">Detalhes do Pedido</h2>
-             <p className="text-slate-400 text-sm">Personalize com adicionais</p>
+        <div className="flex justify-between items-start mb-4">
+           <div className="flex-1 pr-4">
+             <h2 className="text-2xl font-black text-slate-800 leading-tight">{selectedBurger ? selectedBurger.name : 'Detalhes do Pedido'}</h2>
+             <p className="text-slate-500 text-sm mt-1 leading-relaxed">{selectedBurger ? selectedBurger.description : 'Personalize com adicionais'}</p>
            </div>
            
            <motion.div 

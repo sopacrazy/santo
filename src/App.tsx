@@ -41,6 +41,7 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<'Hambúrguer' | 'Bebidas' | 'Cardápio'>('Hambúrguer');
   const [customerName, setCustomerName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
+  const [selectedBurger, setSelectedBurger] = useState<any>(null);
 
   const cartTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
@@ -79,9 +80,9 @@ export default function App() {
     setCartItems(prev => [...prev, {
       id: Math.random().toString(),
       type: 'burger',
-      name: 'Hambúrguer Personalizado',
+      name: selectedBurger?.name || 'Hambúrguer Personalizado',
       price: total,
-      image: '/hamburgue.png',
+      image: selectedBurger?.image || '/hamburgue.png',
       quantity: 1,
       extras: ingredients
     }]);
@@ -114,10 +115,10 @@ export default function App() {
   ];
 
   const recommended = [
-    { name: 'Clássico', price: 'R$ 15,50', image: '/hamburgue.png' },
-    { name: 'Bacon Smash', price: 'R$ 19,99', image: '/hamburgue.png' },
-    { name: 'Monster Burguer', price: 'R$ 25,90', image: '/hamburgue.png' },
-    { name: 'Cebola Crispy', price: 'R$ 22,50', image: '/hamburgue.png' },
+    { id: 'classico', name: 'Clássico', description: 'Pão artesanal, suculento hambúrguer 160g, acompanhado de queijo e maionese.', price: 15.50, image: '/hamburgue.png' },
+    { id: 'bacon_smash', name: 'Bacon Smash', description: 'Duas carnes smash de 80g, fatias crocantes de bacon e duplo queijo cheddar.', price: 19.99, image: '/hamburgue.png' },
+    { id: 'monster', name: 'Monster Burguer', description: 'Para os famintos! Três hambúrgueres bovinos, triplo queijo e anéis de cebola.', price: 25.90, image: '/hamburgue.png' },
+    { id: 'cebola_crispy', name: 'Cebola Crispy', description: 'Hambúrguer 160g, queijo cheddar, cebola crispy super crocante e molho especial.', price: 22.50, image: '/hamburgue.png' },
   ];
 
   const ingredients = [
@@ -183,9 +184,9 @@ export default function App() {
                   <div className="grid grid-cols-2 gap-4">
                     {recommended.map((item) => (
                       <motion.div 
-                        key={item.name}
+                        key={item.id}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => setCurrentScreen('details')}
+                        onClick={() => { setSelectedBurger(item); setCurrentScreen('details'); }}
                         className="bg-slate-50 rounded-[2.5rem] p-4 flex flex-col items-center relative cursor-pointer group"
                       >
                         <img src={item.image} alt={item.name} className="w-28 h-28 object-cover rounded-2xl mb-4 group-hover:scale-110 transition-transform" />
@@ -193,7 +194,7 @@ export default function App() {
                           <h4 className="font-bold text-slate-800 text-sm overflow-hidden text-ellipsis whitespace-nowrap">{item.name}</h4>
                           <p className="text-[10px] text-slate-400 font-medium">A partir de</p>
                           <div className="flex justify-between items-center">
-                            <span className="text-orange-500 font-bold text-sm">{item.price}</span>
+                            <span className="text-orange-500 font-bold text-sm">R$ {item.price.toFixed(2)}</span>
                             <div className="bg-slate-200 w-6 h-6 rounded-lg flex items-center justify-center text-slate-600">
                               <Plus className="w-3 h-3" />
                             </div>
@@ -234,39 +235,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Navegação Inferior Atualizada */}
-            <div className="absolute bottom-0 left-0 right-0 bg-white px-8 py-5 flex justify-between items-center border-t border-slate-50 shadow-2xl z-[100]">
-              <div 
-                onClick={() => { setCurrentScreen('home'); setActiveCategory('Hambúrguer'); }}
-                className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${currentScreen === 'home' && (activeCategory === 'Hambúrguer' || activeCategory === 'Bebidas') ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
-              >
-                <Home className="w-6 h-6" />
-              </div>
-              
-              <div 
-                onClick={() => { setCurrentScreen('home'); setActiveCategory('Cardápio'); }}
-                className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all relative ${currentScreen === 'home' && activeCategory === 'Cardápio' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
-              >
-                <BookOpen className="w-6 h-6" />
-              </div>
-
-              <div 
-                onClick={() => setCurrentScreen('checkout')}
-                className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all relative ${currentScreen === 'checkout' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
-              >
-                <ShoppingBag className="w-6 h-6" />
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold border-2 border-white">{cartItems.length}</span>
-                )}
-              </div>
-
-              <div 
-                onClick={() => setCurrentScreen('sobre')}
-                className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all relative ${currentScreen === 'sobre' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
-              >
-                <Info className="w-6 h-6" />
-              </div>
-            </div>
           </motion.div>
         ) : currentScreen === 'details' ? (
           <motion.div 
@@ -286,7 +254,7 @@ export default function App() {
               </button>
             </div>
 
-            <BurgerBuilder onCheckout={addBurgerToCart} />
+            <BurgerBuilder key={selectedBurger?.id || 'new'} onCheckout={addBurgerToCart} selectedBurger={selectedBurger} />
           </motion.div>
         ) : currentScreen === 'checkout' ? (
           <motion.div 
@@ -423,7 +391,7 @@ export default function App() {
               <div className="w-10"></div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-8 py-8 space-y-6">
+            <div className="flex-1 overflow-y-auto px-8 pt-8 pb-32 space-y-6">
               <div className="flex justify-center mb-8">
                 <img src="/logo.png" alt="Santto Hambúrguer" className="w-32 h-32 object-contain" />
               </div>
@@ -444,6 +412,42 @@ export default function App() {
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      {/* Navegação Inferior Global */}
+      {(currentScreen === 'home' || currentScreen === 'sobre') && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white px-8 py-5 flex justify-between items-center border-t border-slate-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-[9999]">
+          <div 
+            onClick={() => { setCurrentScreen('home'); setActiveCategory('Hambúrguer'); }}
+            className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${currentScreen === 'home' && (activeCategory === 'Hambúrguer' || activeCategory === 'Bebidas') ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
+          >
+            <Home className="w-6 h-6" />
+          </div>
+          
+          <div 
+            onClick={() => { setCurrentScreen('home'); setActiveCategory('Cardápio'); }}
+            className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all relative ${currentScreen === 'home' && activeCategory === 'Cardápio' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
+          >
+            <BookOpen className="w-6 h-6" />
+          </div>
+
+          <div 
+            onClick={() => setCurrentScreen('checkout')}
+            className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all relative ${currentScreen === 'checkout' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
+          >
+            <ShoppingBag className="w-6 h-6" />
+            {cartItems.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold border-2 border-white">{cartItems.length}</span>
+            )}
+          </div>
+
+          <div 
+            onClick={() => setCurrentScreen('sobre')}
+            className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-2xl transition-all relative ${currentScreen === 'sobre' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-slate-400'}`}
+          >
+            <Info className="w-6 h-6" />
+          </div>
+        </div>
+      )}
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
